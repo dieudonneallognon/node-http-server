@@ -15,6 +15,14 @@ const server = http.createServer((req, res) => {
         if (req.method === METHOD_GET && req.url === BASE_URL) {
             res.writeHead(200, { "content-type": "text/html" });
             output = fs.readFileSync(path.resolve(pagesPath, "index.html"));
+        } else if (
+            req.method === METHOD_GET &&
+            req.url === "/public/images/image.jpg"
+        ) {
+            res.writeHead(200, { "content-type": "mage/jpeg" });
+            output = fs.readFileSync(
+                path.resolve(__dirname, "public", "images/image.jpg")
+            );
         } else {
             res.writeHead(404, { "content-type": "text/html" });
             output = fs.readFileSync(path.resolve(pagesPath, "error_404.html"));
