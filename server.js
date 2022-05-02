@@ -31,6 +31,14 @@ const server = http.createServer((req, res) => {
             output = fs.readFileSync(
                 path.resolve(__dirname, "public", "css/style.css")
             );
+        } else if (
+            req.method === METHOD_GET &&
+            req.url === "/public/js/script.js"
+        ) {
+            res.writeHead(200, { "content-type": "application/x-javascript" });
+            output = fs.readFileSync(
+                path.resolve(__dirname, "public", "js/script.js")
+            );
         } else {
             res.writeHead(404, { "content-type": "text/html" });
             output = fs.readFileSync(path.resolve(pagesPath, "error_404.html"));
