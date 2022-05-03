@@ -14,10 +14,20 @@ const ASSETS = {
         jpg: "image/jpg",
         jpeg: "image/jpg",
         js: "text/javascript",
+        json: "application/json",
     },
 };
 
+MEMORY_DB = {
+    INDEX: 0,
+    DATA: new Map(),
+};
+
 const server = http.createServer((req, res) => {
+    MEMORY_DB.DATA.set(MEMORY_DB.INDEX++, { nom: "Alice" }); // voici comment set une nouvelle entrée.
+    MEMORY_DB.DATA.set(MEMORY_DB.INDEX++, { nom: "Bob" });
+    MEMORY_DB.DATA.set(MEMORY_DB.INDEX++, { nom: "Charlie" });
+
     const pagesPath = path.resolve(__dirname, "public", "pages");
 
     let output = "";
@@ -33,6 +43,11 @@ const server = http.createServer((req, res) => {
             output = fs.readFileSync(
                 path.resolve(__dirname, ...req.url.split("/"))
             );
+        } else if (req.method === METHOD_GET && req.url === "/api/names") {
+            res.writeHead(200, {
+                "content-type": ASSETS.CONTENT_TYPES.json,
+            });
+            output = JSON.stringify(Array.from(MEMORY_DB.DATA));
         } else {
             res.writeHead(404, { "content-type": "text/html" });
             output = fs.readFileSync(path.resolve(pagesPath, "error_404.html"));
