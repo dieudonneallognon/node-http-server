@@ -48,6 +48,17 @@ const server = http.createServer((req, res) => {
                 "content-type": ASSETS.CONTENT_TYPES.json,
             });
             output = JSON.stringify(Array.from(MEMORY_DB.DATA));
+        } else if (
+            req.method === METHOD_GET &&
+            req.url.match(/\/api\/names\/[0-9]+/)
+        ) {
+            res.writeHead(200, {
+                "content-type": ASSETS.CONTENT_TYPES.json,
+            });
+
+            output = JSON.stringify(
+                MEMORY_DB.DATA.get(Number(req.url.split("/").pop())) ?? {}
+            );
         } else {
             res.writeHead(404, { "content-type": "text/html" });
             output = fs.readFileSync(path.resolve(pagesPath, "error_404.html"));
