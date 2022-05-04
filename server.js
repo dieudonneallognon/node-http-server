@@ -7,6 +7,7 @@ const BASE_URL = "/";
 const METHOD = {
     GET: "GET",
     POST: "POST",
+    PUT: "PUT",
 };
 
 const ASSETS = {
@@ -88,10 +89,9 @@ const server = http.createServer((req, res) => {
                             "content-type": ASSETS.CONTENT_TYPES.json,
                         });
 
-                        MEMORY_DB.DATA.set(
-                            MEMORY_DB.INDEX++,
-                            JSON.parse(data).name
-                        );
+                        MEMORY_DB.DATA.set(MEMORY_DB.INDEX++, {
+                            nom: JSON.parse(data).name,
+                        });
 
                         res.write(
                             JSON.stringify({
@@ -102,6 +102,30 @@ const server = http.createServer((req, res) => {
                             })
                         );
 
+                        res.end();
+                    });
+                }
+            }
+            case METHOD.PUT: {
+                if (req.url.match(/\/api\/names\/[0-9]+/)) {
+                    let data = "";
+                    req.on("data", (chunk) => {
+                        data += chunk;
+                    });
+
+                    req.on("end", () => {
+                        res.writeHead(202, {
+                            "content-type": ASSETS.CONTENT_TYPES.json,
+                        });
+
+                        const id = Number(req.url.split("/").pop());
+
+                        if (MEMORY_DB.DATA.get(id)) {
+                            MEMORY_DB.DATA.set(id, {
+                                nom: JSON.parse(data).name,
+                            });
+                        }
+                        res.write(JSON.stringify(MEMORY_DB.DATA.get(id) ?? {}));
                         res.end();
                     });
                 }
