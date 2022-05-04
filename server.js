@@ -115,18 +115,22 @@ const server = http.createServer((req, res) => {
                     });
 
                     req.on("end", () => {
-                        res.writeHead(202, {
-                            "content-type": ASSETS.CONTENT_TYPES.json,
-                        });
-
                         const id = Number(req.url.split("/").pop());
+                        const data = MEMORY_DB.DATA.get(id);
 
-                        if (MEMORY_DB.DATA.get(id)) {
+                        if (data) {
+                            res.writeHead(202, {
+                                "content-type": ASSETS.CONTENT_TYPES.json,
+                            });
                             MEMORY_DB.DATA.set(id, {
                                 nom: JSON.parse(data).name,
                             });
+                        } else {
+                            res.writeHead(404, {
+                                "content-type": ASSETS.CONTENT_TYPES.json,
+                            });
                         }
-                        res.write(JSON.stringify(MEMORY_DB.DATA.get(id) ?? {}));
+                        res.write(JSON.stringify(data) ?? {});
                         res.end();
                     });
                 }
