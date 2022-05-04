@@ -8,6 +8,7 @@ const METHOD = {
     GET: "GET",
     POST: "POST",
     PUT: "PUT",
+    DELETE: "DELETE",
 };
 
 const ASSETS = {
@@ -128,6 +129,26 @@ const server = http.createServer((req, res) => {
                         res.write(JSON.stringify(MEMORY_DB.DATA.get(id) ?? {}));
                         res.end();
                     });
+                }
+            }
+            case METHOD.DELETE: {
+                if (req.url.match(/\/api\/names\/[0-9]+/)) {
+                    const id = Number(req.url.split("/").pop());
+                    const data = MEMORY_DB.DATA.get(id);
+
+                    if (data) {
+                        res.writeHead(202, {
+                            "content-type": ASSETS.CONTENT_TYPES.json,
+                        });
+                        MEMORY_DB.DATA.delete(id);
+                    } else {
+                        res.writeHead(404, {
+                            "content-type": ASSETS.CONTENT_TYPES.json,
+                        });
+                    }
+
+                    res.write(JSON.stringify(data ?? {}));
+                    res.end();
                 }
             }
         }
