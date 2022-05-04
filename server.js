@@ -61,16 +61,24 @@ const server = http.createServer((req, res) => {
                     });
                     output = JSON.stringify(Array.from(MEMORY_DB.DATA));
                 } else if (req.url.match(/\/api\/names\/[0-9]+/)) {
-                    res.writeHead(200, {
-                        "content-type": ASSETS.CONTENT_TYPES.json,
-                    });
+                    const id = Number(req.url.split("/").pop());
+                    const data = MEMORY_DB.DATA.get(id);
 
-                    output = JSON.stringify(
-                        MEMORY_DB.DATA.get(Number(req.url.split("/").pop())) ??
-                            {}
-                    );
+                    if (data) {
+                        res.writeHead(200, {
+                            "content-type": ASSETS.CONTENT_TYPES.json,
+                        });
+                    } else {
+                        res.writeHead(404, {
+                            "content-type": ASSETS.CONTENT_TYPES.json,
+                        });
+                    }
+
+                    output = JSON.stringify(data);
                 } else {
-                    res.writeHead(404, { "content-type": "text/html" });
+                    res.writeHead(404, {
+                        "content-type": ASSETS.CONTENT_TYPES.html,
+                    });
                     output = fs.readFileSync(
                         path.resolve(pagesPath, "error_404.html")
                     );
